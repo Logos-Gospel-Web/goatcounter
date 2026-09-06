@@ -31,7 +31,7 @@ jobs:
       - uses: 'docker/metadata-action@v5'
         id: 'meta'
         with:
-          images: 'arp242/goatcounter'
+          images: '${{ vars.DOCKERHUB_USERNAME }}/goatcounter'
           tags:   "type=semver,pattern={{version}}\ntype=semver,pattern={{major}}.{{minor}}"
       - uses: 'docker/build-push-action@v6'
         with:
@@ -42,6 +42,7 @@ jobs:
           # https://docs.docker.com/build/ci/github-actions/multi-platform/#distribute-build-across-multiple-runners
           #
           # Seems quite complex though, so this is okay for now.
+          push:       true
           platforms:  'linux/amd64,linux/arm64'
           tags:       ${{ vars.DOCKERHUB_USERNAME }}/goatcounter:latest
           cache-from: 'type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/goatcounter:latest'
