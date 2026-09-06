@@ -113,7 +113,7 @@ func fetch(accountID, key, p string) ([]byte, error) {
 }
 
 func fetchHash(accountID, key string) (string, error) {
-	p := "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz.sha256"
+	p := "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz.sha256"
 	b, err := fetch(accountID, key, p)
 	if err != nil {
 		return "", err
@@ -146,7 +146,7 @@ func fetchDB(accountID, key, path string) error {
 		os.Remove(tmp.Name())
 	}()
 
-	p := "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz"
+	p := "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz"
 	b, err := fetch(accountID, key, p)
 	if err != nil {
 		return err
