@@ -48,14 +48,17 @@ var groups = map[string]string{
 	"com.google.android.googlequicksearchbox":                      "Google",
 	"com.google.android.googlequicksearchbox/https/www.google.com": "Google",
 
-	"com.andrewshu.android.reddit":       "www.reddit.com",
-	"com.laurencedawson.reddit_sync":     "www.reddit.com",
-	"com.laurencedawson.reddit_sync.dev": "www.reddit.com",
-	"com.laurencedawson.reddit_sync.pro": "www.reddit.com",
+	"www.reddit.com":                     "Reddit",
+	"com.andrewshu.android.reddit":       "Reddit",
+	"com.laurencedawson.reddit_sync":     "Reddit",
+	"com.laurencedawson.reddit_sync.dev": "Reddit",
+	"com.laurencedawson.reddit_sync.pro": "Reddit",
 
-	"m.facebook.com":  "www.facebook.com",
-	"l.facebook.com":  "www.facebook.com",
-	"lm.facebook.com": "www.facebook.com",
+	"facebook.com":     "Facebook",
+	"m.facebook.com":   "Facebook",
+	"l.facebook.com":   "Facebook",
+	"lm.facebook.com":  "Facebook",
+	"www.facebook.com": "Facebook",
 
 	"org.telegram.messenger": "Telegram Messenger",
 
@@ -68,11 +71,25 @@ var groups = map[string]string{
 	"m.baidu.com":       "Baidu",
 	"tieba.baidu.com":   "Baidu",
 	"www.baidu.com":     "Baidu",
+	"chat.baidu.com":    "Baidu",
+
+	"so.com": "360 Search",
+	"m.so.com": "360 Search",
+
+    "sogou.com": "Sogou",
+    "m.sogou.com": "Sogou",
+
+	"duckduckgo.com": "DuckDuckGo",
+
+	"chatgpt.com": "ChatGPT",
+
+	"perplexity.ai": "Perplexity",
+
+	"copilot.microsoft.com": "Copilot",
 }
 
 var hostAlias = map[string]string{
 	"en.m.wikipedia.org": "en.wikipedia.org",
-	"m.facebook.com":     "www.facebook.com",
 	"m.habr.com":         "habr.com",
 	"old.reddit.com":     "www.reddit.com",
 	"i.reddit.com":       "www.reddit.com",
@@ -159,7 +176,7 @@ func cleanRefURL(ref string, refURL *url.URL) (string, bool) {
 	}
 
 	// Group based on URL.
-	if strings.HasPrefix(refURL.Host, "www.google.") || strings.HasPrefix(refURL.Host, "google.") {
+	if strings.HasPrefix(refURL.Host, "www.google.") || strings.HasPrefix(refURL.Host, "google.") || strings.HasSuffix(refURL.Host, ".google.com") {
 		// Group all "google.co.nz", "google.nl", etc. as "Google".
 		return "Google", true
 	}
@@ -169,8 +186,17 @@ func cleanRefURL(ref string, refURL *url.URL) (string, bool) {
 		return "Yandex", true
 	}
 
-	if strings.Contains(refURL.Host, "search.yahoo.com") {
+	if strings.Contains(refURL.Host, "search.yahoo.co") {
 		return "Yahoo", true
+	}
+
+	if strings.Contains(refURL.Host, "bing.com") {
+		return "Bing", true
+	}
+
+	if strings.HasPrefix(refURL.Host, "github.com") {
+		// yandex.ru, yandex.az, yandex.com, tel.yandex.com, many more
+		return "GitHub", true
 	}
 
 	if g, ok := groups[strings.ToLower(refURL.Host)]; ok {

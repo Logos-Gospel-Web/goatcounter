@@ -346,6 +346,8 @@ func (row ExportCSVRow) Hit(ctx context.Context, siteID SiteID) (Hit, error) {
 		Ref:             row.Ref,
 		UserAgentHeader: row.UserAgent,
 		Location:        row.Location, // TODO: validate from list?
+		BrowserName:     row.Browser,
+		SystemName:      row.System,
 	}
 
 	v := NewValidate(ctx)

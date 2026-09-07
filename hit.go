@@ -52,6 +52,14 @@ type Hit struct {
 	RemoteAddr    string `db:"-" json:"-"`
 	UserSessionID string `db:"-" json:"-"`
 
+	// Browser/system names from a CSV import; resolved to IDs in Defaults.
+	// These are only ever set by the CSV importer (the normal tracking path
+	// derives browser/system from the User-Agent instead).
+	BrowserName    string `db:"-" json:"-"`
+	BrowserVersion string `db:"-" json:"-"`
+	SystemName     string `db:"-" json:"-"`
+	SystemVersion  string `db:"-" json:"-"`
+
 	NoStore   bool `db:"-" json:"-"` // Don't store in hits (still store in stats).
 	noProcess bool `db:"-" json:"-"` // Don't process in memstore; for merging paths.
 }
@@ -283,13 +291,30 @@ func (h *Hit) Defaults(ctx context.Context, initial bool) error {
 
 		// Get or insert browser and system.
 		if site.Settings.Collect.Has(CollectUserAgent) {
-			ua := UserAgent{UserAgent: h.UserAgentHeader}
-			err = ua.GetOrInsert(ctx)
-			if err != nil {
-				return errors.Wrap(err, "Hit.Defaults")
+			if h.BrowserName != "" && h.SystemName != "" {
+				// Explicitly provided (e.g. from a CSV import); use these
+				// instead of parsing the User-Agent.
+				var b Browser
+				err = b.GetOrInsert(ctx, h.BrowserName, h.BrowserVersion)
+				if err != nil {
+					return errors.Wrap(err, "Hit.Defaults")
+				}
+				h.BrowserID = b.ID
+				var s System
+				err = s.GetOrInsert(ctx, h.SystemName, h.SystemVersion)
+				if err != nil {
+					return errors.Wrap(err, "Hit.Defaults")
+				}
+				h.SystemID = s.ID
+			} else {
+				ua := UserAgent{UserAgent: h.UserAgentHeader}
+				err = ua.GetOrInsert(ctx)
+				if err != nil {
+					return errors.Wrap(err, "Hit.Defaults")
+				}
+				h.BrowserID = ua.BrowserID
+				h.SystemID = ua.SystemID
 			}
-			h.BrowserID = ua.BrowserID
-			h.SystemID = ua.SystemID
 		}
 	}
 
